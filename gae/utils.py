@@ -177,10 +177,17 @@ def mask_test_edges(adj):
     assert ~ismember(val_edges, train_edges)
     assert ~ismember(test_edges, train_edges)
     assert ~ismember(val_edges, test_edges)
-
+    # identity matrix of shape 1124. shape is equal to the shape of train_edges matrix
     data = np.ones(train_edges.shape[0])
-
+    print("data=",data.shape)
     # Re-build adj matrix
+    # CSR - Compressed Sparse Row. For fast row slicing, faster matrix vector products
+    # csr_matrix(arr).count_nonzero() to count non zeros
+    # data = 1124 edges
+    # row = x-axis of train_edges
+    # col = y-axis of train_edges
+    # shape = 468 X 468
+    # adjacency matrix with only 1124 edges, removed lower triangular values and 198 edges, which are in val and test 
     adj_train = sp.csr_matrix((data, (train_edges[:, 0], train_edges[:, 1])), shape=adj.shape)
     adj_train = adj_train + adj_train.T
     # NOTE: these edge lists only contain single direction of edge!
@@ -188,10 +195,21 @@ def mask_test_edges(adj):
 
 
 def preprocess_graph(adj):
+    # converting adj matrix to coo matrix
     adj = sp.coo_matrix(adj)
+    # sp.eye(adj.shape[0]) = Sparse matrix with ones on diagonal
+    # adj_ = adj + diagonal vaues = 1 
     adj_ = adj + sp.eye(adj.shape[0])
+    # Sum the matrix elements over a given axis
+    # calculating sum of each row
     rowsum = np.array(adj_.sum(1))
+    print("rowsum=",rowsum)
+    # sp.diags = Construct a sparse matrix from diagonals
+    # np.power(rowsum, -0.5) = square root of each element
+    # flatten() = Return a copy of the array collapsed into one dimension
     degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
+    print("degree=",degree_mat_inv_sqrt)
+    # (adj + feature) * pow(D,.5) * pow(D,.5)
     adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
     # return sparse_to_tuple(adj_normalized)
     return sparse_mx_to_torch_sparse_tensor(adj_normalized)
