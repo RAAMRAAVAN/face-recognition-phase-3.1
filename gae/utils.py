@@ -203,12 +203,12 @@ def preprocess_graph(adj):
     # Sum the matrix elements over a given axis
     # calculating sum of each row
     rowsum = np.array(adj_.sum(1))
-    print("rowsum=",rowsum)
+    # print("rowsum=",rowsum)
     # sp.diags = Construct a sparse matrix from diagonals
     # np.power(rowsum, -0.5) = square root of each element
     # flatten() = Return a copy of the array collapsed into one dimension
     degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
-    print("degree=",degree_mat_inv_sqrt)
+    # print("degree=",degree_mat_inv_sqrt)
     # (adj + feature) * pow(D,.5) * pow(D,.5)
     adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
     # return sparse_to_tuple(adj_normalized)
