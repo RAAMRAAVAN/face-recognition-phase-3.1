@@ -203,12 +203,12 @@ def preprocess_graph(adj):
     # Sum the matrix elements over a given axis
     # calculating sum of each row
     rowsum = np.array(adj_.sum(1))
-    print("rowsum=",rowsum)
+    # print("rowsum=",rowsum)
     # sp.diags = Construct a sparse matrix from diagonals
     # np.power(rowsum, -0.5) = square root of each element
     # flatten() = Return a copy of the array collapsed into one dimension
     degree_mat_inv_sqrt = sp.diags(np.power(rowsum, -0.5).flatten())
-    print("degree=",degree_mat_inv_sqrt)
+    # print("degree=",degree_mat_inv_sqrt)
     # (adj + feature) * pow(D,.5) * pow(D,.5)
     adj_normalized = adj_.dot(degree_mat_inv_sqrt).transpose().dot(degree_mat_inv_sqrt).tocoo()
     # return sparse_to_tuple(adj_normalized)
@@ -230,6 +230,7 @@ def get_roc_score(emb, adj_orig, edges_pos, edges_neg):
         return 1 / (1 + np.exp(-x))
 
     # Predict on test set of edges
+    # reconstruct matrix
     adj_rec = np.dot(emb, emb.T)
     preds = []
     pos = []
@@ -245,6 +246,8 @@ def get_roc_score(emb, adj_orig, edges_pos, edges_neg):
 
     preds_all = np.hstack([preds, preds_neg])
     labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds_neg))])
+    # print("preds",preds_all.shape)
+    # print("labels",labels_all.shape)
     roc_score = roc_auc_score(labels_all, preds_all)
     ap_score = average_precision_score(labels_all, preds_all)
 
