@@ -230,6 +230,7 @@ def get_roc_score(emb, adj_orig, edges_pos, edges_neg):
         return 1 / (1 + np.exp(-x))
 
     # Predict on test set of edges
+    # reconstruct matrix
     adj_rec = np.dot(emb, emb.T)
     preds = []
     pos = []
@@ -245,6 +246,8 @@ def get_roc_score(emb, adj_orig, edges_pos, edges_neg):
 
     preds_all = np.hstack([preds, preds_neg])
     labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds_neg))])
+    # print("preds",preds_all.shape)
+    # print("labels",labels_all.shape)
     roc_score = roc_auc_score(labels_all, preds_all)
     ap_score = average_precision_score(labels_all, preds_all)
 
