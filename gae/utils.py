@@ -58,7 +58,7 @@ def sparse_to_tuple(sparse_mx):
     if not sp.isspmatrix_coo(sparse_mx):
         # convert sparse_mx to coo matrix
         sparse_mx = sparse_mx.tocoo()
-    print("sparse_mx",type(sparse_mx),sparse_mx.shape)
+    # print("sparse_mx",type(sparse_mx),sparse_mx.shape)
     # sparse_mx.row = list of rows. Eg: [  0   0   0 ... 463 464 466]
     # sparse_mx.col = list of columns. Eg: [ 11  37 164 ... 464 465 467]
     # np.vstack = stacks array in sequence vertically. Eg: [[  0   0   0 ... 463 464 466],[ 11  37 164 ... 464 465 467]]
@@ -173,13 +173,13 @@ def mask_test_edges(adj):
         val_edges_false.append([idx_i, idx_j])
 
     assert ~ismember(test_edges_false, edges_all)
-    assert ~ismember(val_edges_false, edges_all)
+    # assert ~ismember(val_edges_false, edges_all)
     assert ~ismember(val_edges, train_edges)
     assert ~ismember(test_edges, train_edges)
     assert ~ismember(val_edges, test_edges)
     # identity matrix of shape 1124. shape is equal to the shape of train_edges matrix
     data = np.ones(train_edges.shape[0])
-    print("data=",data.shape)
+    # print("data=",data.shape)
     # Re-build adj matrix
     # CSR - Compressed Sparse Row. For fast row slicing, faster matrix vector products
     # csr_matrix(arr).count_nonzero() to count non zeros
