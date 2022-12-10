@@ -20,7 +20,8 @@ class GraphConvolution(Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        torch.nn.init.xavier_uniform_(self.weight)
+        # torch.nn.init.xavier_uniform_(self.weight)
+        torch.nn.init.constant_(self.weight,0.3)
 
     def forward(self, input, adj):
         input = F.dropout(input, self.dropout, self.training)

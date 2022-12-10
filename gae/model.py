@@ -28,7 +28,7 @@ class GCNModelVAE(nn.Module):
     def forward(self, x, adj):
         mu, logvar = self.encode(x, adj)
         z = self.reparameterize(mu, logvar)
-        # print("z1=",z.shape)
+        # print("z1=",z.shape,mu.shape,logvar.shape)
         return self.dc(z), mu, logvar,z
 
 

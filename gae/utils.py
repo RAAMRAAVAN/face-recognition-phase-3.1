@@ -251,4 +251,4 @@ def get_roc_score(emb, adj_orig, edges_pos, edges_neg):
     roc_score = roc_auc_score(labels_all, preds_all)
     ap_score = average_precision_score(labels_all, preds_all)
 
-    return roc_score, ap_score
+    return roc_score, ap_score, emb
