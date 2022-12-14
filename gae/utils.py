@@ -173,7 +173,7 @@ def mask_test_edges(adj):
         val_edges_false.append([idx_i, idx_j])
 
     assert ~ismember(test_edges_false, edges_all)
-    # assert ~ismember(val_edges_false, edges_all)
+    assert ~ismember(val_edges_false, edges_all)
     assert ~ismember(val_edges, train_edges)
     assert ~ismember(test_edges, train_edges)
     assert ~ismember(val_edges, test_edges)
@@ -246,9 +246,10 @@ def get_roc_score(emb, adj_orig, edges_pos, edges_neg):
 
     preds_all = np.hstack([preds, preds_neg])
     labels_all = np.hstack([np.ones(len(preds)), np.zeros(len(preds_neg))])
-    # print("preds",preds_all.shape)
-    # print("labels",labels_all.shape)
+    # print("preds",labels_all.shape)
+    # print("labels",labels_all)
+    # print("labels",type(labels_all))
     roc_score = roc_auc_score(labels_all, preds_all)
     ap_score = average_precision_score(labels_all, preds_all)
 
-    return roc_score, ap_score
+    return roc_score, ap_score, emb

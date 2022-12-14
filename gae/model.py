@@ -2,20 +2,20 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from gae.layers import GraphConvolution
 
 class GCNModelVAE(nn.Module):
-    def __init__(self, input_feat_dim, hidden_dim1, hidden_dim2, dropout):
+    def __init__(self, input_feat_dim, hidden_dim1, hidden_dim2, dropout, seed):
         super(GCNModelVAE, self).__init__()
-        self.gc1 = GraphConvolution(input_feat_dim, hidden_dim1, dropout, act=F.relu)
-        self.gc2 = GraphConvolution(hidden_dim1, hidden_dim2, dropout, act=lambda x: x)
-        self.gc3 = GraphConvolution(hidden_dim1, hidden_dim2, dropout, act=lambda x: x)
+        self.gc1 = GraphConvolution(input_feat_dim, hidden_dim1, dropout, seed, act=F.relu)
+        self.gc2 = GraphConvolution(hidden_dim1, hidden_dim2, dropout, seed, act=lambda x: x)
+        self.gc3 = GraphConvolution(hidden_dim1, hidden_dim2, dropout, seed, act=lambda x: x)
         self.dc = InnerProductDecoder(dropout, act=lambda x: x)
 
     def encode(self, x, adj):
         hidden1 = self.gc1(x, adj)
-        return self.gc2(hidden1, adj), self.gc3(hidden1, adj)
+        # print("hidden1",hidden1.shape)
+        return self.gc2(hidden1, adj), self.gc3(hidden1, adj), hidden1
 
     def reparameterize(self, mu, logvar):
         if self.training:
@@ -26,10 +26,11 @@ class GCNModelVAE(nn.Module):
             return mu
 
     def forward(self, x, adj):
-        mu, logvar = self.encode(x, adj)
+        mu, logvar, hidden1 = self.encode(x, adj)
+        # print("hidden2",mu.shape," hidden3=",logvar.shape)
         z = self.reparameterize(mu, logvar)
-        # print("z1=",z.shape)
-        return self.dc(z), mu, logvar,z
+        # print("z1=",z.shape,mu.shape,logvar.shape)
+        return self.dc(z), mu, logvar, z
 
 
 class InnerProductDecoder(nn.Module):

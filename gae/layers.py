@@ -3,25 +3,30 @@ import torch
 import torch.nn.functional as F
 from torch.nn.modules.module import Module
 from torch.nn.parameter import Parameter
-
+import numpy as np
+import glob
+import os
 
 class GraphConvolution(Module):
     """
     Simple GCN layer, similar to https://arxiv.org/abs/1609.02907
     """
 
-    def __init__(self, in_features, out_features, dropout=0., act=F.relu):
+    def __init__(self, in_features, out_features, dropout=0., seed=0, act=F.relu):
         super(GraphConvolution, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
         self.dropout = dropout
         self.act = act
+        torch.manual_seed(10)
         self.weight = Parameter(torch.FloatTensor(in_features, out_features))
+        # self.weight = Parameter(torch.ones(in_features, out_features))
         self.reset_parameters()
 
     def reset_parameters(self):
+        torch.manual_seed(10)
         torch.nn.init.xavier_uniform_(self.weight)
-
+        
     def forward(self, input, adj):
         input = F.dropout(input, self.dropout, self.training)
         support = torch.mm(input.float(), self.weight.float())
